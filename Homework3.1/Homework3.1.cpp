@@ -10,11 +10,18 @@ string generatePassword(int length, bool includeSymbols);
 int main()
 {
     setlocale(LC_ALL, "RU");
-    int length, includeSymbols;
-    cout << "Длина: " << endl;
+
+    int length;
+    bool includeSymbols;
+    char includeSymbolsInput;
+
+    cout << "Введите длину пароля: ";
     cin >> length;
-    cout << "Символы: " << endl;
-    cin >> includeSymbols;
+
+    cout << "Включать спец символы? (y/n): ";
+    cin >> includeSymbolsInput;
+    includeSymbols = (includeSymbolsInput == 'y' || includeSymbolsInput == 'Y');
+
     cout << "Пароль: " << generatePassword(length, includeSymbols) << endl;
     return 0;
 }
@@ -22,11 +29,21 @@ int main()
 string generatePassword(int length, bool includeSymbols) {
     const string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     const string symbols = "!@#$%^&*()_+=-`~[]\{}|;':\",./<>?";
+
     string res = chars;
-    res += includeSymbols ? symbols : "";
-    string p;
-    for (int i = 0; i < length; i++){
-        p += chars[rand() % chars.size()];
+
+    if (includeSymbols) {
+        res += symbols;
     }
-    return p;
+
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> distrib(0, res.size() - 1);
+
+    string password;
+
+    for (int i = 0; i < length; i++){
+        password += res[distrib(gen)];
+    }
+    return password;
 }
